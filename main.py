@@ -28,14 +28,12 @@ class Game():
 
         self.FONT = pygame.font.Font('fonts/font.ttf', 65)
 
-        self.score = self.FONT.render('Score:', True, pygame.Color('green'))
-        # self.record = self.FONT.render('Record:', True, pygame.Color('purple'))
-
         self.dx = 0
         self.dy = 0
         self.speed_y = 2
         self.boost_y = 1
         self.score = 0
+        self.record = self.get_record()
         self.next_score = 1000
 
         self.block_list = deque(maxlen=4)
@@ -211,21 +209,44 @@ class Game():
             if self.FIELD[0][i]:
                 self.running = False
 
+    def get_record(self):
+        try:
+            with open('record') as f:
+                return f.readline()
+        except FileNotFoundError:
+            with open('record', 'w') as f:
+                f.write('0')
+
+
+    def set_record(self):
+        if self.score > int(self.record):
+            with open('record', 'w') as f:
+                f.write(str(self.score))
+        self.record = self.get_record()
+
+
     def render(self):
         self.screen.blit(self.backgound, (0, 0))
         self.screen.blit(self.game_screen, (20, 20))
         # Draw grid
         [pygame.draw.rect(self.game_screen,(40,40,40),i_rect,1) for i_rect in self.GRID]
-        #self.screen.blit(self.score, (535, 780))
-        self.screen.blit(self.FONT.render(str(self.score), True, pygame.Color('white')), (550, 840))
-        #self.screen.blit(self.record, (525, 650))
-        #self.screen.blit(self.FONT.render(str(1), True, pygame.Color('white')), (550, 710))
+
+        self.screen.blit(self.FONT.render("Level:", True, pygame.Color('purple')), (500, 620))
+        self.screen.blit(self.FONT.render(str(1), True, pygame.Color('white')), (500, 670))
+
+        self.screen.blit(self.FONT.render("Score:", True, pygame.Color('purple')), (500, 720))
+        self.screen.blit(self.FONT.render(str(self.score), True, pygame.Color('white')), (500, 770))
+
+        self.screen.blit(self.FONT.render("Record:", True, pygame.Color('purple')), (500, 820))
+        self.screen.blit(self.FONT.render(str(self.record), True, pygame.Color('white')), (500, 870))
+
         self.DrawField()
         self.userInput()
         self.MoveBlocks()
         self.removeLines()
         self.speedUp()
         self.nextBlock()
+        self.set_record()
         self.GameOver()
         pygame.display.update()
 
