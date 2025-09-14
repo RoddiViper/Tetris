@@ -26,11 +26,14 @@ class Game():
          # Red, Orange, Yellow, Green, Cyan, Violet, Purple
         self.block_colors = [(255, 45, 45), (255, 100, 0), (255, 255, 0), (45, 255, 45), (0, 255, 255), (160, 50, 255), (255, 50, 255)]
 
+        self.levels = [[1, 2], [2, 2.5], [3, 3], [4, 3.5], [5, 4]]
+        self.level = 0
+
         self.FONT = pygame.font.Font('fonts/font.ttf', 65)
 
         self.dx = 0
         self.dy = 0
-        self.speed_y = 2
+        self.speed_y = self.levels[self.level][1]
         self.boost_y = 1
         self.score = 0
         self.record = self.get_record()
@@ -59,15 +62,14 @@ class Game():
 
         self.block_rect = pygame.Rect(0, 0, self.TILE - 2, self.TILE - 2)
 
-        self.block_next_rect_1 = pygame.Rect(0, 0, self.TILE - 2, self.TILE - 2)
-        self.block_next_rect_2 = pygame.Rect(0, 0, self.TILE - 2, self.TILE - 2)
-        self.block_next_rect_3 = pygame.Rect(0, 0, self.TILE - 2, self.TILE - 2)
+        self.block_next_rect = pygame.Rect(0, 0, self.TILE - 2, self.TILE - 2)
 
         self.block = (self.blocks[self.block_list[0]])
 
         self.block_next_1 = (self.blocks_next[self.block_list[1]])
         self.block_next_2 = (self.blocks_next[self.block_list[2]])
         self.block_next_3 = (self.blocks_next[self.block_list[3]])
+
 
     def checkBordersX(self, i):
         if min(self.block).x < 0 or max(self.block).x > self.W - 1 or self.FIELD[self.block[i].y][self.block[i].x]:
@@ -114,8 +116,9 @@ class Game():
 
 
     def speedUp(self):
-        if self.score >= self.next_score:
-            self.speed_y += 1
+        if self.score >= self.next_score and not self.level > 4:
+            self.level += 1
+            self.speed_y = self.levels[self.level][1]
             self.next_score += 1000
 
 
@@ -135,19 +138,19 @@ class Game():
     def nextBlock(self):
         # 1
         for i in range(4):
-            self.block_next_rect_1.x = self.block_next_1[i].x * self.TILE + 380
-            self.block_next_rect_1.y = self.block_next_1[i].y * self.TILE + 85
-            pygame.draw.rect(self.screen, (self.block_colors[self.block_list[1]]), self.block_next_rect_1)
+            self.block_next_rect.x = self.block_next_1[i].x * self.TILE + 380
+            self.block_next_rect.y = self.block_next_1[i].y * self.TILE + 85
+            pygame.draw.rect(self.screen, (self.block_colors[self.block_list[1]]), self.block_next_rect)
         # 2
         for i in range(4):
-            self.block_next_rect_2.x = self.block_next_2[i].x * self.TILE + 380
-            self.block_next_rect_2.y = self.block_next_2[i].y * self.TILE + 285
-            pygame.draw.rect(self.screen, (self.block_colors[self.block_list[2]]), self.block_next_rect_2)
+            self.block_next_rect.x = self.block_next_2[i].x * self.TILE + 380
+            self.block_next_rect.y = self.block_next_2[i].y * self.TILE + 285
+            pygame.draw.rect(self.screen, (self.block_colors[self.block_list[2]]), self.block_next_rect)
         # 3
         for i in range(4):
-            self.block_next_rect_3.x = self.block_next_3[i].x * self.TILE + 380
-            self.block_next_rect_3.y = self.block_next_3[i].y * self.TILE + 485
-            pygame.draw.rect(self.screen, (self.block_colors[self.block_list[3]]), self.block_next_rect_3)
+            self.block_next_rect.x = self.block_next_3[i].x * self.TILE + 380
+            self.block_next_rect.y = self.block_next_3[i].y * self.TILE + 485
+            pygame.draw.rect(self.screen, (self.block_colors[self.block_list[3]]), self.block_next_rect)
 
 
     def userInput(self):
@@ -232,7 +235,7 @@ class Game():
         [pygame.draw.rect(self.game_screen,(40,40,40),i_rect,1) for i_rect in self.GRID]
 
         self.screen.blit(self.FONT.render("Level:", True, pygame.Color('purple')), (500, 620))
-        self.screen.blit(self.FONT.render(str(1), True, pygame.Color('white')), (500, 670))
+        self.screen.blit(self.FONT.render(str(self.levels[self.level][0]), True, pygame.Color('white')), (500, 670))
 
         self.screen.blit(self.FONT.render("Score:", True, pygame.Color('purple')), (500, 720))
         self.screen.blit(self.FONT.render(str(self.score), True, pygame.Color('white')), (500, 770))
@@ -240,6 +243,7 @@ class Game():
         self.screen.blit(self.FONT.render("Record:", True, pygame.Color('purple')), (500, 820))
         self.screen.blit(self.FONT.render(str(self.record), True, pygame.Color('white')), (500, 870))
 
+        
         self.DrawField()
         self.userInput()
         self.MoveBlocks()
