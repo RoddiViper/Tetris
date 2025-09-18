@@ -26,18 +26,9 @@ class Game():
          # Red, Orange, Yellow, Green, Cyan, Violet, Purple
         self.block_colors = [(255, 45, 45), (255, 100, 0), (255, 255, 0), (45, 255, 45), (0, 255, 255), (160, 50, 255), (255, 50, 255)]
 
-        self.levels = [[1, 2], [2, 2.5], [3, 3], [4, 3.5], [5, 4]]
-        self.level = 0
+        self.levels = [[1, 2], [2, 2.25], [3, 2.5], [4, 2.75], [5, 3]]
 
         self.FONT = pygame.font.Font('fonts/font.ttf', 65)
-
-        self.dx = 0
-        self.dy = 0
-        self.speed_y = self.levels[self.level][1]
-        self.boost_y = 1
-        self.score = 0
-        self.record = self.get_record()
-        self.next_score = 1000
 
         self.block_list = deque(maxlen=4)
         for i in range(4):
@@ -45,8 +36,19 @@ class Game():
             
         self.running = True
 
+        self.reset()
         self.spawnBlock()
+        
 
+    def reset(self):
+        self.dx = 0
+        self.dy = 0
+        self.level = 0
+        self.speed_y = self.levels[self.level][1]
+        self.boost_y = 1
+        self.score = 0
+        self.record = self.get_record()
+        self.next_score = 1000
 
     def spawnBlock(self):
         self.blocks_positions = [[(-1, 0), (-2, 0), (0, 0), (1, 0)], # I-Block
