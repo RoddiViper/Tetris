@@ -29,12 +29,14 @@ class Game():
         self.levels = [[1, 2], [2, 2.25], [3, 2.5], [4, 2.75], [5, 3]]
 
         self.FONT = pygame.font.Font('fonts/font.ttf', 65)
+        self.FONT_BIG = pygame.font.Font('fonts/font.ttf', 90)
 
         self.block_list = deque(maxlen=4)
         for i in range(4):
             self.block_list.append(random.randint(0, 6))
             
         self.running = True
+        self.record = self.get_record()
 
         self.reset()
         self.spawnBlock()
@@ -47,7 +49,7 @@ class Game():
         self.speed_y = self.levels[self.level][1]
         self.boost_y = 1
         self.score = 0
-        self.record = self.get_record()
+        
         self.next_score = 1000
 
     def spawnBlock(self):
@@ -118,7 +120,7 @@ class Game():
 
 
     def speedUp(self):
-        if self.score >= self.next_score and not self.level > 4:
+        if self.score >= self.next_score and self.level < 5:
             self.level += 1
             self.speed_y = self.levels[self.level][1]
             self.next_score += 1000
@@ -212,7 +214,11 @@ class Game():
     def GameOver(self):
         for i in range(self.W):
             if self.FIELD[0][i]:
-                self.running = False
+                self.test = "Game Over!"
+                self.screen.blit(self.backgound, (0, 0))
+                self.screen.blit(self.FONT_BIG.render(self.test, True, pygame.Color('purple')), (170, 200))
+                self.screen.blit(self.FONT.render(str(self.score), True, pygame.Color('white')), (500, 770))
+                self.reset()
 
     def get_record(self):
         try:
