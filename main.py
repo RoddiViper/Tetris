@@ -16,12 +16,11 @@ class Game():
         self.RES = 750, 940
         self.GAME_RES = self.W * self.TILE, self.H * self.TILE 
         self.FPS = 120
-
         self.game_screen = pygame.Surface((self.GAME_RES))
         self.screen = pygame.display.set_mode(self.RES)
         self.backgound = pygame.image.load('images/background.png').convert()
         self.GRID = [(x * self.TILE, y * self.TILE, self.TILE, self.TILE) for x in range(self.W) for y in range(self.H)]
-        self.FIELD = [[0 for i in range(self.W)] for j in range(self.H)]
+        
 
          # Red, Orange, Yellow, Green, Cyan, Violet, Purple
         self.block_colors = [(255, 45, 45), (255, 100, 0), (255, 255, 0), (45, 255, 45), (0, 255, 255), (160, 50, 255), (255, 50, 255)]
@@ -43,6 +42,7 @@ class Game():
         
 
     def reset(self):
+        self.FIELD = [[0 for i in range(self.W)] for j in range(self.H)]
         self.dx = 0
         self.dy = 0
         self.level = 0
@@ -214,11 +214,13 @@ class Game():
     def GameOver(self):
         for i in range(self.W):
             if self.FIELD[0][i]:
-                self.test = "Game Over!"
-                self.screen.blit(self.backgound, (0, 0))
-                self.screen.blit(self.FONT_BIG.render(self.test, True, pygame.Color('purple')), (170, 200))
-                self.screen.blit(self.FONT.render(str(self.score), True, pygame.Color('white')), (500, 770))
+                self.test = self.backgound
+                self.screen.blit(self.test, (0, 0))
+                self.screen.blit(self.FONT_BIG.render("GAME OVER", True, pygame.Color('purple')), (170, 200))
+                self.screen.blit(self.FONT_BIG.render("Your Score:", True, pygame.Color('purple')), (155, 260))
+                self.screen.blit(self.FONT_BIG.render(str(self.score), True, pygame.Color('white')), (350, 340))
                 self.reset()
+                self.test = (0,0,0,0)
 
     def get_record(self):
         try:
@@ -251,7 +253,7 @@ class Game():
         self.screen.blit(self.FONT.render("Record:", True, pygame.Color('purple')), (500, 820))
         self.screen.blit(self.FONT.render(str(self.record), True, pygame.Color('white')), (500, 870))
 
-        
+        self.GameOver()
         self.DrawField()
         self.userInput()
         self.MoveBlocks()
@@ -259,7 +261,7 @@ class Game():
         self.speedUp()
         self.nextBlock()
         self.set_record()
-        self.GameOver()
+        
         pygame.display.update()
 
 
