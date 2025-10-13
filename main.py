@@ -33,7 +33,8 @@ class Game():
         self.block_list = deque(maxlen=4)
         for i in range(4):
             self.block_list.append(random.randint(0, 6))
-            
+        
+        self.game_reset = True
         self.running = True
         self.record = self.get_record()
 
@@ -177,6 +178,8 @@ class Game():
                     self.boost_y = 20
                 elif event.key == pygame.K_SPACE:
                     self.boost_y = 500
+                elif event.key == pygame.K_q:
+                    self.game_reset = True
 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_DOWN:
@@ -218,9 +221,14 @@ class Game():
                 self.screen.blit(self.test, (0, 0))
                 self.screen.blit(self.FONT_BIG.render("GAME OVER", True, pygame.Color('purple')), (170, 200))
                 self.screen.blit(self.FONT_BIG.render("Your Score:", True, pygame.Color('purple')), (155, 260))
-                self.screen.blit(self.FONT_BIG.render(str(self.score), True, pygame.Color('white')), (350, 340))
-                self.reset()
-                self.test = (0,0,0,0)
+                self.screen.blit(self.FONT_BIG.render(str(self.score), True, pygame.Color('white')), (300, 340))
+                self.screen.blit(self.FONT_BIG.render("Press Q to reset", True, pygame.Color('purple')), (55, 400))
+                if self.game_reset:
+                    self.reset()
+                    self.test = (0,0,0,0)
+                    return True
+                return False
+        return True
 
     def get_record(self):
         try:
@@ -253,17 +261,18 @@ class Game():
         self.screen.blit(self.FONT.render("Record:", True, pygame.Color('purple')), (500, 820))
         self.screen.blit(self.FONT.render(str(self.record), True, pygame.Color('white')), (500, 870))
 
-        self.GameOver()
-        self.DrawField()
         self.userInput()
-        self.MoveBlocks()
-        self.removeLines()
-        self.speedUp()
-        self.nextBlock()
-        self.set_record()
+        if self.GameOver():
+            self.DrawField()
+            self.MoveBlocks()
+            self.removeLines()
+            self.speedUp()
+            self.nextBlock()
+            self.set_record()
+        
         
         pygame.display.update()
-
+        self.game_reset = False
 
     def run(self):    
         while self.running:
