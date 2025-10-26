@@ -39,7 +39,7 @@ class Game():
         self.record = self.get_record()
 
         self.reset()
-        self.spawnBlock()
+        self.spawn_block()
         
 
     def reset(self):
@@ -53,7 +53,7 @@ class Game():
         
         self.next_score = 1000
 
-    def spawnBlock(self):
+    def spawn_block(self):
         self.blocks_positions = [[(-1, 0), (-2, 0), (0, 0), (1, 0)], # I-Block
                             [(0, -1), (-1, -1), (-1, 0), (0, 0)], # O-Block
                             [(-1, 0), (-1, 1), (0, 0), (0, -1)], # Z-Block
@@ -76,20 +76,20 @@ class Game():
         self.block_next_3 = (self.blocks_next[self.block_list[3]])
 
 
-    def checkBordersX(self, i):
+    def check_borders_x(self, i):
         if min(self.block).x < 0 or max(self.block).x > self.W - 1 or self.FIELD[self.block[i].y][self.block[i].x]:
             return False
         return True
 
 
-    def checkBordersY(self):
+    def check_borders_y(self):
         for i in range(4):
             if self.block[i].y >= self.H - 1 or self.FIELD[self.block[i].y+1][self.block[i].x]:
                 return False
         return True
 
 
-    def MoveBlocks(self):
+    def move_blocks(self):
         # Falling speed
         self.dy += ((self.speed_y/120)*self.boost_y)
 
@@ -97,18 +97,18 @@ class Game():
         self.block_old = deepcopy(self.block)
         for i in range(4):
             self.block[i].x += self.dx
-            if not self.checkBordersX(i):
+            if not self.check_borders_x(i):
                 self.block = deepcopy(self.block_old)
                 break
         self.dx = 0
 
         # Move Y
         if int(self.dy) >= 1:
-            if self.checkBordersY():
+            if self.check_borders_y():
                 for i in range(4):
                     self.block[i].y += 1
             else:
-                self.putOnField()
+                self.put_on_field()
                 self.score += 20
                 self.boost_y = 1
             self.dy = 0
@@ -120,14 +120,14 @@ class Game():
             pygame.draw.rect(self.game_screen, (self.block_colors[self.block_list[0]]), self.block_rect)
 
 
-    def speedUp(self):
+    def speed_up(self):
         if self.score >= self.next_score and self.level < 5:
             self.level += 1
             self.speed_y = self.levels[self.level][1]
             self.next_score += 1000
 
 
-    def rotateBlock(self):
+    def rotate_block(self):
         center = self.block[0]
         self.block_old = deepcopy(self.block)
         for i in range(4):
@@ -135,12 +135,12 @@ class Game():
             y = self.block[i].x - center.x
             self.block[i].x = center.x - x
             self.block[i].y = center.y + y
-            if not self.checkBordersX(i):
+            if not self.check_borders_x(i):
                 self.block = deepcopy(self.block_old)
                 break
 
 
-    def nextBlock(self):
+    def next_block(self):
         # 1
         for i in range(4):
             self.block_next_rect.x = self.block_next_1[i].x * self.TILE + 380
@@ -158,7 +158,7 @@ class Game():
             pygame.draw.rect(self.screen, (self.block_colors[self.block_list[3]]), self.block_next_rect)
 
 
-    def userInput(self):
+    def user_input(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -169,7 +169,7 @@ class Game():
                     self.running = False
                     break
                 elif event.key == pygame.K_UP:
-                    self.rotateBlock()
+                    self.rotate_block()
                 elif event.key == pygame.K_LEFT:
                     self.dx = -1
                 elif event.key == pygame.K_RIGHT:
@@ -186,7 +186,7 @@ class Game():
                     self.boost_y = 1
 
 
-    def removeLines(self):
+    def remove_lines(self):
         line = self.H - 1
         for row in range(self.H - 1, -1, -1):
             count = 0
@@ -200,21 +200,21 @@ class Game():
                 self.score += 100
 
 
-    def putOnField(self):
+    def put_on_field(self):
         self.block_old = self.block
         for i in range(4):
             self.FIELD[self.block_old[i].y][self.block_old[i].x] = self.block_colors[self.block_list[0]]
         self.block_list.append(random.randint(0, 6))
-        self.spawnBlock()
+        self.spawn_block()
 
 
-    def DrawField(self):
+    def draw_field(self):
         for y, raw in enumerate(self.FIELD):
             for x, col in enumerate(raw):
                 self.block_rect.x, self.block_rect.y = x * self.TILE, y * self.TILE
                 pygame.draw.rect(self.game_screen, col, self.block_rect)
     
-    def GameOver(self):
+    def game_over(self):
         for i in range(self.W):
             if self.FIELD[0][i]:
                 self.test = self.backgound
@@ -245,13 +245,7 @@ class Game():
                 f.write(str(self.score))
         self.record = self.get_record()
 
-
-    def render(self):
-        self.screen.blit(self.backgound, (0, 0))
-        self.screen.blit(self.game_screen, (20, 20))
-        # Draw grid
-        [pygame.draw.rect(self.game_screen,(40,40,40),i_rect,1) for i_rect in self.GRID]
-
+    def game_info(self):
         self.screen.blit(self.FONT.render("Level:", True, pygame.Color('purple')), (500, 620))
         self.screen.blit(self.FONT.render(str(self.levels[self.level][0]), True, pygame.Color('white')), (500, 670))
 
@@ -261,13 +255,20 @@ class Game():
         self.screen.blit(self.FONT.render("Record:", True, pygame.Color('purple')), (500, 820))
         self.screen.blit(self.FONT.render(str(self.record), True, pygame.Color('white')), (500, 870))
 
-        self.userInput()
-        if self.GameOver():
-            self.DrawField()
-            self.MoveBlocks()
-            self.removeLines()
-            self.speedUp()
-            self.nextBlock()
+    def render(self):
+        self.screen.blit(self.backgound, (0, 0))
+        self.screen.blit(self.game_screen, (20, 20))
+
+        [pygame.draw.rect(self.game_screen,(40,40,40),i_rect,1) for i_rect in self.GRID]
+
+        self.user_input()
+        if self.game_over():
+            self.draw_field()
+            self.move_blocks()
+            self.game_info()
+            self.remove_lines()
+            self.speed_up()
+            self.next_block()
             self.set_record()
         
         
